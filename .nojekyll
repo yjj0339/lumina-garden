@@ -1,0 +1,2 @@
+# 防止 GitHub Pages 用 Jekyll 处理站点（保留下划线等资源、加速构建）。
+# 本文件需存在于站点根，vite 会把 public/ 内容原样复制到 dist/。
