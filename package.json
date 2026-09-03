@@ -1,0 +1,26 @@
+{
+  "name": "lumina-garden",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "光色花园 — Lumina Garden: a two-minute seamless 3D visual performance built with Three.js, TypeScript, GSAP and custom shaders.",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "npm run gen:events && tsc --noEmit && vite build",
+    "build:fast": "vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit",
+    "gen:events": "node tools/gen-events.mjs",
+    "export:video": "node tools/export/run.mjs",
+    "deploy:gh": "node tools/deploy-gh.mjs"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.5"
+  }
+}

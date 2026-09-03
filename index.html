@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#f3e9dd" />
+  <meta name="description" content="光色花园 · Lumina Garden — 两分钟无缝循环的高品质 3D 视觉演出。" />
+  <title>光色花园 · Lumina Garden</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23ff8e76'/%3E%3Ccircle cx='12' cy='13' r='5' fill='%23ffb367'/%3E%3Ccircle cx='20' cy='19' r='4' fill='%239fe8c5'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <style>
+    :root{
+      --cream:#fff4ea; --ink:#4a3f47; --coral:#ff8e76; --apricot:#ffb367;
+      --lake:#4fc3d9; --mint:#9fe8c5; --glass:rgba(255,250,246,.62);
+      --glass2:rgba(255,250,246,.82); --line:rgba(120,100,110,.16);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden;background:linear-gradient(180deg,#dceffb,#f3e9dd)}
+    body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;color:var(--ink)}
+    #gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+    #ui{position:fixed;inset:0;pointer-events:none;opacity:.35;transition:opacity .5s}
+    #ui.active,#ui:hover{opacity:1}
+    .title{position:absolute;left:22px;top:calc(18px + env(safe-area-inset-top));pointer-events:none;text-shadow:0 1px 12px rgba(255,255,255,.7)}
+    .title h1{font-size:19px;font-weight:600;letter-spacing:.28em}
+    .title span{font-size:11px;letter-spacing:.34em;opacity:.55}
+    .brandmark{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 40deg,var(--coral),var(--apricot),var(--mint),var(--lake),var(--coral));display:inline-block;vertical-align:-6px;margin-right:10px;box-shadow:0 0 14px rgba(255,150,110,.6)}
+    #caption{position:absolute;left:50%;top:calc(12% + env(safe-area-inset-top));transform:translateX(-50%);
+      font-size:14px;letter-spacing:.3em;opacity:0;color:#5c4b52;text-shadow:0 1px 10px rgba(255,255,255,.9)}
+    #caption.show{animation:cap 4.4s ease forwards}
+    @keyframes cap{0%{opacity:0;transform:translate(-50%,8px)}12%{opacity:.9;transform:translate(-50%,0)}75%{opacity:.9}100%{opacity:0}}
+    #bar{position:absolute;left:0;right:0;bottom:0;padding:14px 18px calc(16px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,transparent,rgba(74,63,71,.09));pointer-events:auto}
+    #scrub{position:relative;height:26px;margin-bottom:8px;cursor:pointer;touch-action:none}
+    .track{position:absolute;left:0;right:0;top:11px;height:4px;border-radius:3px;background:rgba(255,255,255,.5);box-shadow:inset 0 1px 2px rgba(140,110,120,.18)}
+    .fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:3px;background:linear-gradient(90deg,var(--coral),var(--apricot) 45%,var(--lake) 75%,var(--mint));box-shadow:0 0 8px rgba(255,140,110,.55)}
+    .knob{position:absolute;top:50%;left:0;width:14px;height:14px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 1px 8px rgba(255,140,110,.8),0 0 0 3px rgba(255,255,255,.55);transition:transform .15s}
+    #scrub:hover .knob{transform:translate(-50%,-50%) scale(1.25)}
+    .marks span{position:absolute;top:11px;width:1px;height:4px;background:rgba(120,100,110,.25)}
+    #controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    button{pointer-events:auto;border:0;background:var(--glass);color:var(--ink);width:38px;height:38px;border-radius:13px;cursor:pointer;
+      backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 10px rgba(160,130,140,.15),inset 0 0 0 1px rgba(255,255,255,.5);
+      display:grid;place-items:center;transition:transform .12s,background .2s;font-size:14px}
+    button:hover{transform:translateY(-1px);background:var(--glass2)}
+    button:active{transform:scale(.94)}
+    svg{width:17px;height:17px;fill:currentColor}
+    #b-play{width:46px;height:46px;border-radius:16px;background:linear-gradient(150deg,#fff 0%,#ffe9df 100%)}
+    #b-play svg.i-pause{display:none}
+    #b-play.playing svg.i-play{display:none}
+    #b-play.playing svg.i-pause{display:block}
+    .vol{display:flex;align-items:center;gap:8px;background:var(--glass);border-radius:13px;padding:0 12px;height:38px;backdrop-filter:blur(12px);box-shadow:0 2px 10px rgba(160,130,140,.15),inset 0 0 0 1px rgba(255,255,255,.5)}
+    input[type=range]{-webkit-appearance:none;width:86px;height:3px;border-radius:2px;background:rgba(120,100,110,.25);outline:none}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--coral);box-shadow:0 0 6px rgba(255,140,110,.7);cursor:pointer}
+    #b-quality{width:auto;padding:0 14px;font-size:12px;letter-spacing:.14em}
+    #timecode{font-size:11px;letter-spacing:.08em;opacity:.65;font-variant-numeric:tabular-nums;margin-left:auto}
+    #hint{position:absolute;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);
+      font-size:12px;letter-spacing:.22em;opacity:.7;background:var(--glass);padding:8px 16px;border-radius:20px;backdrop-filter:blur(10px);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);pointer-events:none;transition:opacity .8s;animation:pulse 2.4s ease infinite}
+    @keyframes pulse{50%{transform:translateX(-50%) translateY(-3px)}}
+    #ui.played #hint{opacity:0}
+    #boot{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(160deg,#e7f3fb,#f7ecdf 60%,#fde8db);z-index:50;transition:opacity .8s}
+    #boot.go{opacity:0;pointer-events:none}
+    #boot .g{width:64px;height:64px;border-radius:50%;background:conic-gradient(from 0deg,var(--coral),var(--apricot),var(--lemon,#ffe98a),var(--mint),var(--lake),var(--lilac,#cdb9f0),var(--coral));animation:sp 1.4s linear infinite;filter:blur(.4px);box-shadow:0 0 40px rgba(255,160,120,.55)}
+    #boot p{position:absolute;bottom:38%;font-size:12px;letter-spacing:.4em;opacity:.5}
+    @keyframes sp{to{transform:rotate(1turn)}}
+    #ui.portrait #timecode{display:none}
+    #ui.portrait .title{left:16px}
+    #ui.portrait #controls{gap:8px}
+    #ui.portrait button{width:36px;height:36px}
+    #ui.portrait #b-play{width:44px;height:44px}
+    @media (max-width:560px){ #caption{font-size:12px;letter-spacing:.2em} }
+  </style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <div id="ui">
+    <div class="title"><span class="brandmark"></span><h1>光色花园</h1><span>LUMINA&nbsp;GARDEN</span></div>
+    <div id="caption"></div>
+    <div id="hint">轻触画面开始 · 空格播放 · ← → 快进</div>
+    <div id="bar">
+      <div id="scrub"></div>
+      <div id="controls">
+        <button id="b-play" aria-label="播放"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+        <button id="b-replay" aria-label="重播"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button>
+        <button id="b-mute" aria-label="静音"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+        <div class="vol"><input id="vol" type="range" min="0" max="1" step="0.02" value="0.8" aria-label="音量" /></div>
+        <button id="b-quality" aria-label="画质">高清</button>
+        <button id="b-full" aria-label="全屏"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+        <div id="timecode">0:00 / 2:00</div>
+      </div>
+    </div>
+  </div>
+  <div id="boot"><div class="g"></div><p>正在培育花园…</p></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

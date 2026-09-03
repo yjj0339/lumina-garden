@@ -1,0 +1,6 @@
+{
+  "name": "lumina-garden",
+  "pages_build_output_dir": "dist",
+  "build_command": "npm run build",
+  "node_version": "20"
+}

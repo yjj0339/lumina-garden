@@ -1,0 +1,7 @@
+node_modules
+dist
+.vite
+*.local
+tools/export/out
+tools/shots
+public/generated
